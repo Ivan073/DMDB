@@ -1,0 +1,142 @@
+Предметная область: Гостиница
+
+
+Функциональные требования:
+	Авторизация пользователя
+		Незарегистрированный пользователь должен быть способен зарегистрироваться в системе
+		Зарегистрированный пользователь должен быть способен авторизироваться в системе
+
+	Управление пользователями
+		Система должна поддерживать создание пользователя с информацией о фамилии, имени, отчестве, поле, возрасте, email, адресе
+		Система должна поддерживать получение информации о пользователе
+		Система должна поддерживать изменение информации пользователя
+		Система должна поддерживать удаление пользователя
+
+	Система ролей
+		В системе должна присутствовать роль администратора
+			Администратор имеет полный доступ к базе данных
+			Роль администратора обеспечивает автоматическое создание новых броней, изменение информации клиентов
+		В системе должна присутствовать роль менеджера
+			Менеджер имеет право на чтение всех данных базы данных
+			Менеджер может изменять/добавлять номера, сотрудников, услуги
+		В системе должна присутствовать роль обслуживающего
+ 			Обслуживабщий может изменять/добавлять/просматривать кафе, блюда в кафе, приборы в номере
+		В системе должна присутствовать роль регистратора
+			Регистратор может изменять/добавлять/просматривать клиентов, брони
+		В системе должна присутствовать роль "сайт"
+			Сайт может просматривать пользователей и добавлять/изменять отзывы
+
+	Журналирование действий пользователя
+		Все действия с таблицами в базе данных должны быть записаны в отдельный файл
+
+	Дополнительные требования
+		Система должна поддерживать резервное копирование 1 раз в день и возможность восстановления данных
+		Система должна валидировать формат email при записи
+
+
+
+Таблицы:
+	Room
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Room_number INT NOT NULL,
+		Area DECIMAL(10,2) CHECK (Area > 0),
+		Price_per_day DECIMAL(10,2) CHECK (Price_per_day > 0),
+		Type_id INT,
+		FOREIGN KEY (Type_id) REFERENCES RoomType(Id),
+
+	RoomType
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Name NVARCHAR(50) NOT NULL,
+		Description NVARCHAR(5000),
+
+	 Appliance
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Type_id INT NOT NULL,
+		Room_id INT,
+		Acquisition_date DATE,
+		FOREIGN KEY (Type_id) REFERENCES ApplianceType(Id),
+		FOREIGN KEY (Room_id) REFERENCES Room(Id),
+
+	 ApplianceType
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Name NVARCHAR(100) NOT NULL,
+
+	Booking
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Client_id INT NOT NULL,
+		Room_id INT NOT NULL,
+		Booking_duration INT NOT NULL CHECK (Booking_duration > 0),
+		Booking_date DATE NOT NULL,
+		Price DECIMAL(10,2) NOT NULL CHECK (Price > 0),
+		FOREIGN KEY (Client_id) REFERENCES Client(Id),
+		FOREIGN KEY (Room_id) REFERENCES Room(Id),
+
+	Client
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Last_name NVARCHAR(100) NOT NULL,
+		First_name NVARCHAR(100) NOT NULL,
+		Patronymic NVARCHAR(100) NOT NULL,
+		Info_id INT NOT NULL,
+		Review_id INT NOT NULL,
+		FOREIGN KEY (Info_id) REFERENCES ClientInfo(Id),
+		FOREIGN KEY (Review_id) REFERENCES Review(Id),
+
+	ClientInfo
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Age INT,
+		Email NVARCHAR(200) CHECK (Email REGEXP '^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]),
+		Adress NVARCHAR(200),
+		Gender_id INT,
+		FOREIGN KEY (Gender_id) REFERENCES Gender(Id),
+		CONSTRAINT email_check CHECK (Email REGEXP '^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]')
+
+	Review
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Rating INT NOTNULL CHECK (Rating>=1 AND Rating<=5),
+		Comment NVARCHAR(500) NOT NULL,
+
+	Gender
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Name NVARCHAR(50) NOT NULL,
+
+	 Service
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Name NVARCHAR(100) NOT NULL,
+		Price DECIMAL(10,2) CHECK (Price>0),
+		Performer_id INT,
+		FOREIGN KEY (Performer_id) REFERENCES Staff(Id),
+	
+	Staff
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Last_name NVARCHAR(100) NOT NULL,
+		First_name NVARCHAR(100) NOT NULL,
+		Patronymic NVARCHAR(100) NOT NULL,
+		Job_id INT,
+		Salary DECIMAL(10,2) CHECK (Salary>0),
+		FOREIGN KEY (Job_id) REFERENCES Job(Id),
+
+	Job
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Name NVARCHAR(100) NOT NULL,
+		Description NVARCHAR(500),
+	
+	Cafe
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Name NVARCHAR(100) NOT NULL,
+		Description NVARCHAR(500),
+
+	MenuEntry
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Cafe_id INT NOT NULL,
+		Dish_id INT NOT NULL,
+		Price DECIMAL(10,2),
+		FOREIGN KEY (Cafe_id) REFERENCES Cafe(Id),
+		FOREIGN KEY (Dish_id) REFERENCES Dish(Id),
+
+	Dish
+		Id INT PRIMARY KEY AUTO_INCREMENT,
+		Name NVARCHAR(100) NOT NULL,
+		Description NVARCHAR(500),
+		Ingredients NVARCHAR(500),
+
+

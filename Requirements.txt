@@ -84,7 +84,7 @@
 	ClientInfo
 		Id INT PRIMARY KEY AUTO_INCREMENT,
 		Age INT,
-		Email NVARCHAR(200) CHECK (Email REGEXP '^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]),
+		Email NVARCHAR(200),
 		Adress NVARCHAR(200),
 		Gender_id INT,
 		FOREIGN KEY (Gender_id) REFERENCES Gender(Id),

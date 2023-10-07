@@ -77,7 +77,7 @@
 		First_name NVARCHAR(100) NOT NULL,
 		Patronymic NVARCHAR(100) NOT NULL,
 		Info_id INT NOT NULL,
-		Review_id INT NOT NULL,
+		Review_id INT,
 		FOREIGN KEY (Info_id) REFERENCES ClientInfo(Id),
 		FOREIGN KEY (Review_id) REFERENCES Review(Id),
 
